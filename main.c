@@ -6,7 +6,7 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:36:32 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/16 19:12:33 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/16 19:15:19 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@ t_philo	init_philo(int i)
 
 	philo.id = i + 1;
 	philo.fork = &fork;
+	pthread_mutex_init(&fork);
 	pthread_create(&philo.thread, NULL, &routine, &philo);
 	return(philo);
 }
@@ -50,7 +51,7 @@ t_program init_program(int n)
 	i = 0;
 	while (i < n)
 	{
-		prog.philos->next_fork = 
+		prog.philos[i]->next_fork = 
 		pthread_join(prog.philos[i].thread, NULL);
 		i++;
 	}
