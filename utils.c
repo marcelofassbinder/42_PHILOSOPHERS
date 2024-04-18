@@ -6,12 +6,18 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:36:13 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/16 15:53:05 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/17 15:50:01 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+/**
+ * Converts a string to an integer.
+ *
+ * @param str The string to convert.
+ * @return The converted integer value.
+ */
 int	ft_atoi(char *str)
 {
 	int	i;
