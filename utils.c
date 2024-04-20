@@ -6,7 +6,7 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:36:13 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/17 15:50:01 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/20 14:10:12 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,4 +43,14 @@ int	ft_atoi(char *str)
 	if (menos == 0)
 		return (nbr);
 	return (-nbr);
+}
+
+size_t	get_current_time(void)
+{
+	struct timeval	t;
+	size_t 			current;
+
+	gettimeofday(&t, NULL);
+	current = (t.tv_sec * 1000) + (t.tv_usec/1000);
+	return(current);
 }
