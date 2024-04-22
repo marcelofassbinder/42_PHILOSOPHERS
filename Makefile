@@ -1,7 +1,7 @@
 SRC = utils.c input.c main.c struct.c
 OBJS = ${SRC:.c=.o}
 CC = cc
-FLAGS = -g -Wall -Werror -Wextra -pthread #-fsanitize=thread
+FLAGS = -g -Wall -Werror -Wextra -pthread -fsanitize=thread
 RM = rm -rf
 NAME = philo
 
