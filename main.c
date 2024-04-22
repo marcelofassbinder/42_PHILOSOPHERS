@@ -6,7 +6,7 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:36:32 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/20 19:54:27 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/22 19:47:31 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,52 +14,74 @@
 
 void	*routine(void *philo)
 {
-	t_philo 	ph;
+	t_philo 	*ph;
 	size_t		start;
 
-	ph = *(t_philo *)philo;
-	start = ph.prog->start;
-	if (ph.id % 2 == 0)
-		usleep(100);
+	ph = (t_philo *)philo;
+	wait_threads_creation(ph->prog);
+	start = ph->prog->start;
+	if (ph->id % 2 == 0)
+		usleep(10000);
 	while(1)
 	{
-		if (ph.id % 2 != 0)
+		pthread_mutex_lock(&ph->prog->death);
+		if (ph->prog->is_dead == true)
 		{
-			ph.last_meal = ph_is_eating(ph.id, start, ph.l_fork, ph.r_fork, ph.prog->time_to_eat);
+			pthread_mutex_unlock(&ph->prog->death);
+			return (NULL);
 		}
-		else if (ph.id % 2 == 0)
-		{
-			ph.last_meal = ph_is_eating(ph.id, start, ph.r_fork, ph.l_fork, ph.prog->time_to_eat);
-		}
-		printf("\033[35m%zu philo %i is sleeping\033[0m\n", get_current_time() - start, ph.id);
-		usleep(ph.prog->time_to_sleep * 1000);
-		printf("%zu philo %i is thinking\n", get_current_time() - start, ph.id);
-		/* if ((get_current_time() - start) - ph.last_meal > (unsigned long)ph.prog->time_to_die)
-		{
-			ph.is_dead = 1; 
-			printf("current time - last meal = %zu\n", (get_current_time() - start) - ph.last_meal);
-			printf("time to die = %d\n", ph.prog->time_to_die);
-			printf("\033[31m%zu philo %i died\033[0m\n", get_current_time() - start, ph.id);
-			exit(0); 
-		}*/
+		pthread_mutex_unlock(&ph->prog->death);
+		if (ph->id % 2 != 0)
+			ph_is_eating(ph, start, ph->l_fork, ph->r_fork);
+		else if (ph->id % 2 == 0)
+			ph_is_eating(ph, start, ph->r_fork, ph->l_fork);
+		print_action(ph, "is sleeping", MAGENTA);
+		usleep(ph->prog->time_to_sleep * 1000);
+		print_action(ph, "is thinking", YELLOW);
 	}
 	return (NULL);
 }
 
-size_t	ph_is_eating(int id, size_t start, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork, int time_to_eat)
-{
-	size_t	last_meal;
 
+int monitoring(t_program *prog)
+{
+	int i;
+	
+	while (1)
+	{
+		i = 0;
+		while (i < prog->n_philos)
+		{
+			pthread_mutex_lock(&prog->monitor);
+			if ((get_current_time() - prog->start) - prog->philos[i].last_meal >= (size_t)prog->time_to_die)
+				{
+					print_action(&prog->philos[i], "died", RED);
+					pthread_mutex_lock(&prog->death);
+					prog->is_dead = true;
+					pthread_mutex_unlock(&prog->death);
+					pthread_mutex_unlock(&prog->monitor);
+					return(0);
+				}
+			pthread_mutex_unlock(&prog->monitor);
+			i++;
+		}
+	}
+	return (1);
+}
+
+void	ph_is_eating(t_philo *ph, size_t start, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
+{
 	pthread_mutex_lock(first_fork);
-	printf("\033[33m%zu philo %i has taken a fork\033[0m\n", get_current_time() - start, id);
+	print_action(ph, "has taken a fork", BLUE);
 	pthread_mutex_lock(second_fork);
-	printf("\033[33m%zu philo %i has taken a fork\033[0m\n", get_current_time() - start, id);
-	printf("\033[32m%zu philo %i is eating\033[0m\n", get_current_time() - start, id);
-	last_meal = get_current_time() - start;
-	usleep(time_to_eat * 1000);
+	print_action(ph, "has taken a fork", BLUE);
+	print_action(ph, "is eating", GREEN);
+	pthread_mutex_lock(&ph->prog->monitor);
+	ph->last_meal = get_current_time() - start;
+	pthread_mutex_unlock(&ph->prog->monitor);
+	usleep(ph->prog->time_to_eat * 1000);
 	pthread_mutex_unlock(first_fork);
 	pthread_mutex_unlock(second_fork);
-	return (last_meal);
 }
 
 int	main(int argc, char **argv)
@@ -68,6 +90,7 @@ int	main(int argc, char **argv)
 	
 	if (!check_input(argc, argv))
 		return (1);
-	init_program(argv, &prog);
-	monitoring(&prog);
+	if (!init_program(argv, &prog))
+		return (1);
+	destroy_mutexes(&prog);
 }
