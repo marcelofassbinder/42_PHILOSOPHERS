@@ -6,23 +6,12 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:36:13 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/22 18:44:21 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:02:01 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void print_action(t_philo *philo, char *msg, char *color)
-{
-	pthread_mutex_lock(&philo->prog->death);
-	if (philo->prog->is_dead == false)
-	{
-		pthread_mutex_lock(&philo->prog->print);
-		printf("%s%zu philo %i %s%s\n", color, get_current_time() - philo->prog->start, philo->id, msg, RESET);
-		pthread_mutex_unlock(&philo->prog->print);
-	}
-	pthread_mutex_unlock(&philo->prog->death);
-}
 /**
  * Converts a string to an integer.
  *

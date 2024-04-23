@@ -6,7 +6,7 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:37:30 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/22 16:59:35 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/23 15:37:34 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,6 +29,11 @@ int	check_input(int argc, char **argv)
 	if (ft_atoi(argv[1]) <= 0)
 	{
 		write(2, "Error!\nThe number of philosophers is not valid.\n", 48);
+		return (0);
+	}
+	if (argv[5] && ft_atoi(argv[5]) <= 0)
+	{
+		write(2, "Error!\nThe number of times each philosopher must eat is not valid.\n", 68);
 		return (0);
 	}
 	return (1);
