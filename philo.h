@@ -6,7 +6,7 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 11:26:16 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/22 19:19:52 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/23 19:33:27 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,12 @@
 # define WHITE "\033[37m"
 # define RESET "\033[0m"
 
-
-// * * * STRUCUTURE * * *
+// * * * STRUCUTURES * * *
 
 typedef struct 		s_philo
 {
 	int					id;
+	int					meals;
 	size_t				last_meal;
 	pthread_t			thread;
 	pthread_mutex_t		*l_fork;
@@ -52,6 +52,7 @@ typedef struct		s_program
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				times_must_eat;
+	bool			is_full;
 	bool			is_dead;
 	bool			threads_ready;
 	pthread_mutex_t	*forks;
@@ -61,21 +62,38 @@ typedef struct		s_program
 	t_philo			*philos;
 }					t_program;
 
+// * * * INPUT.C * * * 
 
-void	*routine(void *philo);
-int monitoring(t_program *prog);
-void	print_action(t_philo *philo, char *msg, char *color);
-void	ph_is_eating(t_philo *ph, size_t start, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork);
-int init_mutexes(t_program *prog);
-int init_philos(t_program *prog);
-int	init_program(char **argv, t_program *prog);
-int	ft_atoi(char *str);
-int check_input(int argc, char **argv);
-int	arg_is_digit(char *str);
-size_t	get_current_time(void);
-void	destroy_mutexes(t_program *prog);
-void	free_philos_and_forks(t_program *prog);
-int	create_join_threads(t_program *prog);
+int 	check_input(int argc, char **argv);
+int		arg_is_digit(char *str);
+
+// * * * STRUCT.C * * * 
+
+int 	init_mutexes(t_program *prog);
+int 	init_philos(t_program *prog);
+int		init_program(char **argv, t_program *prog);
+int		create_join_threads(t_program *prog);
 void	wait_threads_creation(t_program *prog);
+
+// * * * ACTIONS.C * * * 
+
+void	print_action(t_philo *philo, char *msg, char *color);
+void	eating(t_philo *ph, size_t start, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork);
+void	thinking(t_philo *ph);
+void	sleeping(t_philo *ph);
+
+// * * * MAIN.C * * *
+void	*routine(void *philo);
+int 	monitoring(t_program *prog);
+
+
+// * * * UTILS.C * * * 
+
+int		ft_atoi(char *str);
+size_t	get_current_time(void);
+void	*one_philo(t_philo *ph);
+int	check_dinner_end(t_philo *ph);
+void	destroy_mutexes(t_program *prog);
+void	free_philos(t_program *prog);
 
 #endif

@@ -6,12 +6,11 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 15:31:25 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/22 19:31:04 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/23 20:13:08 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
-
 
 int init_mutexes(t_program *prog)
 {
@@ -25,12 +24,14 @@ int init_mutexes(t_program *prog)
 	i = 0;
 	while (i < prog->n_philos)
 	{
-		pthread_mutex_init(&forks[i], NULL);
+		if (pthread_mutex_init(&forks[i], NULL) != 0)
+			return (0);
 		i++;
 	}
-	pthread_mutex_init(&prog->death, NULL);
-	pthread_mutex_init(&prog->print, NULL);
-	pthread_mutex_init(&prog->monitor, NULL);
+	if (pthread_mutex_init(&prog->death, NULL) != 0 
+		|| pthread_mutex_init(&prog->print, NULL) != 0
+		|| pthread_mutex_init(&prog->monitor, NULL) != 0)
+			return (0);
 	return (1);
 }
  
@@ -49,6 +50,7 @@ int init_philos(t_program *prog)
 		philo[i].prog = prog;
 		philo[i].id = i + 1;
 		philo[i].last_meal = 0;
+		philo[i].meals = 0;
 		philo[i].l_fork = &prog->forks[i];
 		if (i == prog->n_philos - 1)
 			philo[i].r_fork = &prog->forks[0];
@@ -67,6 +69,7 @@ int	init_program(char **argv, t_program *prog)
 	prog->time_to_sleep = ft_atoi(argv[4]);
 	prog->threads_ready = false;
 	prog->is_dead = false;
+	prog->is_full = false;
 	prog->times_must_eat = 0;
 	if (argv[5])
 		prog->times_must_eat = ft_atoi(argv[5]);
@@ -87,6 +90,7 @@ int	create_join_threads(t_program *prog)
 	while (i < prog->n_philos)
 	{
 		if (pthread_create(&prog->philos[i].thread, NULL, &routine, &prog->philos[i]) != 0)
+			//"destruir threads"
 			return (0);
 		i++;
 	}
@@ -119,17 +123,18 @@ void	wait_threads_creation(t_program *prog)
 	}
 }
 
-void	free_philos_and_forks(t_program *prog)
+void	free_philos(t_program *prog)
 {
-	int i;
+	/* int i;
 
 	i = 0;
 	while (i < prog->n_philos)
 	{
-		free(&prog->forks[i]);
 		free(&prog->philos[i]);
 		i++;
-	}
+	} */
+	free(prog->philos);
+	//free(prog->forks);
 }
 
 void	destroy_mutexes(t_program *prog)
