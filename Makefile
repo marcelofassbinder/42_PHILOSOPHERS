@@ -1,7 +1,7 @@
-SRC = utils.c input.c main.c struct.c actions.c
+SRC = utils.c input.c main.c struct.c actions.c threads.c
 OBJS = ${SRC:.c=.o}
 CC = cc
-FLAGS = -g -Wall -Werror -Wextra -fsanitize=thread
+FLAGS = -g -Wall -Werror -Wextra #-fsanitize=thread
 RM = rm -rf
 NAME = philo
 
