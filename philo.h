@@ -6,7 +6,7 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 11:26:16 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/23 19:33:27 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/27 17:04:33 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,10 +55,11 @@ typedef struct		s_program
 	bool			is_full;
 	bool			is_dead;
 	bool			threads_ready;
+	bool			fail_thread_creation;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	print;
 	pthread_mutex_t	monitor;
-	pthread_mutex_t	death;
+	pthread_mutex_t	end;
 	t_philo			*philos;
 }					t_program;
 
@@ -73,7 +74,7 @@ int 	init_mutexes(t_program *prog);
 int 	init_philos(t_program *prog);
 int		init_program(char **argv, t_program *prog);
 int		create_join_threads(t_program *prog);
-void	wait_threads_creation(t_program *prog);
+int	wait_threads_creation(t_program *prog);
 
 // * * * ACTIONS.C * * * 
 
@@ -93,7 +94,9 @@ int		ft_atoi(char *str);
 size_t	get_current_time(void);
 void	*one_philo(t_philo *ph);
 int	check_dinner_end(t_philo *ph);
-void	destroy_mutexes(t_program *prog);
-void	free_philos(t_program *prog);
+int	destroy_mutexes(t_program *prog, int flag, int n);
+
+void	ft_usleep(size_t time);
+
 
 #endif

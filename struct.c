@@ -6,7 +6,7 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 15:31:25 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/23 20:13:08 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/27 17:04:33 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,37 @@ int init_mutexes(t_program *prog)
 	while (i < prog->n_philos)
 	{
 		if (pthread_mutex_init(&forks[i], NULL) != 0)
-			return (0);
+			return (destroy_mutexes(prog, 0, i));
 		i++;
 	}
-	if (pthread_mutex_init(&prog->death, NULL) != 0 
-		|| pthread_mutex_init(&prog->print, NULL) != 0
-		|| pthread_mutex_init(&prog->monitor, NULL) != 0)
-			return (0);
+	if (pthread_mutex_init(&prog->end, NULL) != 0)
+		return (destroy_mutexes(prog, 1, i - 1)); 
+	if (pthread_mutex_init(&prog->print, NULL) != 0)
+		return (destroy_mutexes(prog, 2, i - 1)); 
+	if (pthread_mutex_init(&prog->monitor, NULL) != 0)
+		return (destroy_mutexes(prog, 3, i - 1));
 	return (1);
+}
+
+//funcao que retorna 0 e destroi as mutexes
+int	destroy_mutexes(t_program *prog, int flag, int n)
+{
+	while (n >= 0)
+		pthread_mutex_destroy(&prog->forks[n--]);
+	if (flag == 1)
+		pthread_mutex_destroy(&prog->end);
+	else if (flag == 2)
+	{
+		pthread_mutex_destroy(&prog->end);
+		pthread_mutex_destroy(&prog->print);
+	}
+	else if (flag == 3)
+	{
+		pthread_mutex_destroy(&prog->end);
+		pthread_mutex_destroy(&prog->print);
+		pthread_mutex_destroy(&prog->monitor);
+	}
+	return (0);
 }
  
 int init_philos(t_program *prog)
@@ -70,6 +93,7 @@ int	init_program(char **argv, t_program *prog)
 	prog->threads_ready = false;
 	prog->is_dead = false;
 	prog->is_full = false;
+	prog->fail_thread_creation = false;
 	prog->times_must_eat = 0;
 	if (argv[5])
 		prog->times_must_eat = ft_atoi(argv[5]);
@@ -90,8 +114,10 @@ int	create_join_threads(t_program *prog)
 	while (i < prog->n_philos)
 	{
 		if (pthread_create(&prog->philos[i].thread, NULL, &routine, &prog->philos[i]) != 0)
-			//"destruir threads"
+		{
+			prog->fail_thread_creation = true;
 			return (0);
+		}
 		i++;
 	}
 	prog->start = get_current_time();
@@ -109,11 +135,16 @@ int	create_join_threads(t_program *prog)
 	return (1);
 }
 
-void	wait_threads_creation(t_program *prog)
+int	wait_threads_creation(t_program *prog)
 {
 	while (1)
 	{
 		pthread_mutex_lock(&prog->monitor);
+		if (prog->fail_thread_creation == true)
+		{
+			pthread_mutex_unlock(&prog->monitor);
+			return(0);
+		}
 		if (prog->threads_ready == true)
 		{
 			pthread_mutex_unlock(&prog->monitor);
@@ -121,33 +152,6 @@ void	wait_threads_creation(t_program *prog)
 		}
 		pthread_mutex_unlock(&prog->monitor);
 	}
+	return (1);
 }
 
-void	free_philos(t_program *prog)
-{
-	/* int i;
-
-	i = 0;
-	while (i < prog->n_philos)
-	{
-		free(&prog->philos[i]);
-		i++;
-	} */
-	free(prog->philos);
-	//free(prog->forks);
-}
-
-void	destroy_mutexes(t_program *prog)
-{
-	int i;
-
-	i = 0;
-	while (i < prog->n_philos)
-	{
-		pthread_mutex_destroy(&prog->forks[i]);
-		i++;
-	}
-	pthread_mutex_destroy(&prog->print);
-	pthread_mutex_destroy(&prog->monitor);
-	pthread_mutex_destroy(&prog->death);
-}
