@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marcelo <marcelo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:36:13 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/23 15:02:01 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/28 00:47:45 by marcelo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,9 +48,18 @@ int	ft_atoi(char *str)
 size_t	get_current_time(void)
 {
 	struct timeval	t;
-	size_t 			current;
+	size_t			current;
 
 	gettimeofday(&t, NULL);
-	current = (t.tv_sec * 1000) + (t.tv_usec/1000);
-	return(current);
+	current = (t.tv_sec * 1000) + (t.tv_usec / 1000);
+	return (current);
+}
+
+void	ft_usleep(size_t time)
+{
+	size_t	start;
+
+	start = get_current_time();
+	while (get_current_time() - start < time)
+		;
 }

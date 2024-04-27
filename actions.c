@@ -3,28 +3,30 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
+/*   By: marcelo <marcelo@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:50:36 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/27 17:07:46 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/28 00:36:17 by marcelo          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void print_action(t_philo *philo, char *msg, char *color)
+void	print_action(t_philo *philo, char *msg, char *color)
 {
 	pthread_mutex_lock(&philo->prog->end);
 	if (philo->prog->is_dead == false && philo->prog->is_full == false)
 	{
 		pthread_mutex_lock(&philo->prog->print);
-		printf("%s%zu %i %s%s\n", color, get_current_time() - philo->prog->start, philo->id, msg, RESET);
+		printf("%s%zu %i %s%s\n", color, get_current_time()
+			- philo->prog->start, philo->id, msg, RESET);
 		pthread_mutex_unlock(&philo->prog->print);
 	}
 	pthread_mutex_unlock(&philo->prog->end);
 }
 
-void	eating(t_philo *ph, size_t start, pthread_mutex_t *first_fork, pthread_mutex_t *second_fork)
+void	eating(t_philo *ph, size_t start, pthread_mutex_t *first_fork,
+	pthread_mutex_t *second_fork)
 {
 	pthread_mutex_lock(first_fork);
 	print_action(ph, "has taken a fork", BLUE);
@@ -50,13 +52,4 @@ void	thinking(t_philo *ph)
 {
 	print_action(ph, "is thinking", YELLOW);
 	ft_usleep(1);
-}
-
-void	ft_usleep(size_t time)
-{
-	size_t	start;
-	
-	start = get_current_time();
-	while (get_current_time() - start < time)
-		;
 }
