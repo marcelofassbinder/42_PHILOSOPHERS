@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcelo <marcelo@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:36:32 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/28 00:39:24 by marcelo          ###   ########.fr       */
+/*   Updated: 2024/04/28 18:19:37 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,10 @@
 void	*routine(void *philo)
 {
 	t_philo		*ph;
-	size_t		start;
 
 	ph = (t_philo *)philo;
 	if (!wait_threads_creation(ph->prog))
 		return (NULL);
-	start = ph->prog->start;
 	if (ph->id % 2 == 0)
 		ft_usleep(10);
 	if (ph->prog->n_philos == 1)
@@ -30,20 +28,12 @@ void	*routine(void *philo)
 		if (check_dinner_end(ph) == 1)
 			return (NULL);
 		if (ph->id % 2 != 0)
-			eating(ph, start, ph->l_fork, ph->r_fork);
+			eating(ph, ph->l_fork, ph->r_fork);
 		else if (ph->id % 2 == 0)
-			eating(ph, start, ph->r_fork, ph->l_fork);
+			eating(ph, ph->r_fork, ph->l_fork);
 		sleeping(ph);
 		thinking(ph);
 	}
-	return (NULL);
-}
-
-void	*one_philo(t_philo *ph)
-{
-	pthread_mutex_lock(ph->l_fork);
-	print_action(ph, "has taken a fork", BLUE);
-	pthread_mutex_unlock(ph->l_fork);
 	return (NULL);
 }
 
@@ -66,6 +56,14 @@ int	monitoring(t_program *prog)
 		}
 	}
 	return (1);
+}
+
+void	*one_philo(t_philo *ph)
+{
+	pthread_mutex_lock(ph->l_fork);
+	print_action(ph, "has taken a fork", BLUE);
+	pthread_mutex_unlock(ph->l_fork);
+	return (NULL);
 }
 
 int	main(int argc, char **argv)

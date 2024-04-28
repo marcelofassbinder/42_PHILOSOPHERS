@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcelo <marcelo@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:36:13 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/28 00:47:45 by marcelo          ###   ########.fr       */
+/*   Updated: 2024/04/28 15:49:41 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,5 +61,5 @@ void	ft_usleep(size_t time)
 
 	start = get_current_time();
 	while (get_current_time() - start < time)
-		;
+		usleep(500);
 }

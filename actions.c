@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   actions.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcelo <marcelo@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/23 13:50:36 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/28 00:36:17 by marcelo          ###   ########.fr       */
+/*   Updated: 2024/04/28 18:22:27 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	print_action(t_philo *philo, char *msg, char *color)
 	pthread_mutex_unlock(&philo->prog->end);
 }
 
-void	eating(t_philo *ph, size_t start, pthread_mutex_t *first_fork,
+void	eating(t_philo *ph, pthread_mutex_t *first_fork,
 	pthread_mutex_t *second_fork)
 {
 	pthread_mutex_lock(first_fork);
@@ -34,12 +34,14 @@ void	eating(t_philo *ph, size_t start, pthread_mutex_t *first_fork,
 	print_action(ph, "has taken a fork", BLUE);
 	print_action(ph, "is eating", GREEN);
 	pthread_mutex_lock(&ph->prog->monitor);
-	ph->last_meal = get_current_time() - start;
-	ph->meals++;
+	ph->last_meal = get_current_time() - ph->prog->start;
 	pthread_mutex_unlock(&ph->prog->monitor);
 	ft_usleep(ph->prog->time_to_eat);
 	pthread_mutex_unlock(first_fork);
 	pthread_mutex_unlock(second_fork);
+	pthread_mutex_lock(&ph->prog->monitor);
+	ph->meals++;
+	pthread_mutex_unlock(&ph->prog->monitor);
 }
 
 void	sleeping(t_philo *ph)
@@ -51,5 +53,6 @@ void	sleeping(t_philo *ph)
 void	thinking(t_philo *ph)
 {
 	print_action(ph, "is thinking", YELLOW);
-	ft_usleep(1);
+	if (ph->prog->n_philos % 2 != 0)
+		ft_usleep(1);
 }
