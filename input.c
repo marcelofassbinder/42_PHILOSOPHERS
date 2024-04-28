@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   input.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcelo <marcelo@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/16 15:37:30 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/28 00:38:32 by marcelo          ###   ########.fr       */
+/*   Updated: 2024/04/28 18:07:42 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,9 @@ int	check_input(int argc, char **argv)
 	}
 	if (argv[5] && ft_atoi(argv[5]) <= 0)
 	{
-		write(2, "Error!\nThe number of times each philosopher must eat is not \
-			valid.\n", 68);
+		write(2,
+			"Error!\nThe number of times each philosopher cannot be zero.\n",
+			61);
 		return (0);
 	}
 	return (1);

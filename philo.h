@@ -3,15 +3,17 @@
 /*                                                        :::      ::::::::   */
 /*   philo.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcelo <marcelo@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 11:26:16 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/28 00:44:35 by marcelo          ###   ########.fr       */
+/*   Updated: 2024/04/28 18:27:35 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PHILO_H
 # define PHILO_H
+
+// * * * LIBRARIES * * * 
 
 # include <stdio.h>
 # include <unistd.h>
@@ -63,6 +65,14 @@ typedef struct s_program
 	t_philo			*philos;
 }					t_program;
 
+// * * * ACTIONS.C * * * 
+
+void	print_action(t_philo *philo, char *msg, char *color);
+void	eating(t_philo *ph, pthread_mutex_t *first_fork,
+			pthread_mutex_t *second_fork);
+void	sleeping(t_philo *ph);
+void	thinking(t_philo *ph);
+
 // * * * INPUT.C * * * 
 
 int		check_input(int argc, char **argv);
@@ -73,31 +83,26 @@ int		arg_is_digit(char *str);
 int		init_mutexes(t_program *prog);
 int		init_philos(t_program *prog);
 int		init_program(char **argv, t_program *prog);
+int		destroy_mutexes(t_program *prog, int flag, int n);
+
+// * * * THREADS.C * * * 
+
 int		create_join_threads(t_program *prog);
 int		wait_threads_creation(t_program *prog);
-
-// * * * ACTIONS.C * * * 
-
-void	print_action(t_philo *philo, char *msg, char *color);
-void	eating(t_philo *ph, size_t start, pthread_mutex_t *first_fork,
-			pthread_mutex_t *second_fork);
-void	thinking(t_philo *ph);
-void	sleeping(t_philo *ph);
+int		check_dinner_end(t_philo *ph);
+int		check_death(t_program *prog, int i);
+int		check_meals(t_program *prog, int i);
 
 // * * * MAIN.C * * *
+
 void	*routine(void *philo);
 int		monitoring(t_program *prog);
+void	*one_philo(t_philo *ph);
 
 // * * * UTILS.C * * * 
 
 int		ft_atoi(char *str);
 size_t	get_current_time(void);
-void	*one_philo(t_philo *ph);
-int		check_dinner_end(t_philo *ph);
-int		destroy_mutexes(t_program *prog, int flag, int n);
-
 void	ft_usleep(size_t time);
-int		check_death(t_program *prog, int i);
-int		check_meals(t_program *prog, int i);
 
 #endif

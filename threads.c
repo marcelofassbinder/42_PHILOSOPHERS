@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   threads.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcelo <marcelo@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/28 00:09:32 by marcelo           #+#    #+#             */
-/*   Updated: 2024/04/28 00:46:47 by marcelo          ###   ########.fr       */
+/*   Updated: 2024/04/28 18:08:08 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,23 +20,23 @@ int	create_join_threads(t_program *prog)
 	while (i < prog->n_philos)
 	{
 		if (pthread_create(&prog->philos[i].thread, NULL, &routine,
-				&prog->philos[i++]) != 0)
+				&prog->philos[i]) != 0)
 		{
 			prog->fail_thread_creation = true;
 			return (0);
 		}
+		i++;
 	}
-	prog->start = get_current_time();
 	pthread_mutex_lock(&prog->monitor);
 	prog->threads_ready = true;
 	pthread_mutex_unlock(&prog->monitor);
+	prog->start = get_current_time();
 	monitoring(prog);
 	i = 0;
 	while (i < prog->n_philos)
 	{
-		if (pthread_join(prog->philos[i].thread, NULL) != 0)
+		if (pthread_join(prog->philos[i++].thread, NULL) != 0)
 			return (0);
-		i++;
 	}
 	return (1);
 }
