@@ -3,15 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   struct.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: marcelo <marcelo@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/20 15:31:25 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/28 00:44:35 by marcelo          ###   ########.fr       */
+/*   Updated: 2024/04/29 20:00:01 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+/**
+ * Initializes the mutexes for the program. Returns the function"destroy_mutexes"
+ * in case of an error occurs in the mutex initialization.
+ *
+ * @param prog The program structure.
+ * @return Returns 0 on success, -1 on failure.
+ */
 int	init_mutexes(t_program *prog)
 {
 	pthread_mutex_t	*forks;
@@ -53,6 +60,7 @@ int	init_philos(t_program *prog)
 		philo[i].id = i + 1;
 		philo[i].last_meal = 0;
 		philo[i].meals = 0;
+		philo[i].is_full = false;
 		philo[i].l_fork = &prog->forks[i];
 		if (i == prog->n_philos - 1)
 			philo[i].r_fork = &prog->forks[0];
@@ -71,7 +79,7 @@ int	init_program(char **argv, t_program *prog)
 	prog->time_to_sleep = ft_atoi(argv[4]);
 	prog->threads_ready = false;
 	prog->is_dead = false;
-	prog->is_full = false;
+	prog->philos_are_full = false;
 	prog->fail_thread_creation = false;
 	prog->times_to_eat = 0;
 	if (argv[5])
@@ -85,7 +93,6 @@ int	init_program(char **argv, t_program *prog)
 	return (1);
 }
 
-//funcao que retorna 0 e destroi as mutexes
 int	destroy_mutexes(t_program *prog, int flag, int n)
 {
 	while (n >= 0)
