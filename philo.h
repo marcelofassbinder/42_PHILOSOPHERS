@@ -6,7 +6,7 @@
 /*   By: mfassbin <mfassbin@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/15 11:26:16 by mfassbin          #+#    #+#             */
-/*   Updated: 2024/04/28 18:27:35 by mfassbin         ###   ########.fr       */
+/*   Updated: 2024/04/29 16:00:30 by mfassbin         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_philo
 	int					id;
 	int					meals;
 	size_t				last_meal;
+	bool				is_full;
 	pthread_t			thread;
 	pthread_mutex_t		*l_fork;
 	pthread_mutex_t		*r_fork;
@@ -48,14 +49,14 @@ typedef struct s_philo
 
 typedef struct s_program
 {
-	size_t			start;
 	int				n_philos;
 	int				time_to_die;
 	int				time_to_eat;
 	int				time_to_sleep;
 	int				times_to_eat;
-	bool			is_full;
+	size_t			start;
 	bool			is_dead;
+	bool			philos_are_full;
 	bool			threads_ready;
 	bool			fail_thread_creation;
 	pthread_mutex_t	*forks;
@@ -91,7 +92,7 @@ int		create_join_threads(t_program *prog);
 int		wait_threads_creation(t_program *prog);
 int		check_dinner_end(t_philo *ph);
 int		check_death(t_program *prog, int i);
-int		check_meals(t_program *prog, int i);
+int		check_meals(t_program *prog);
 
 // * * * MAIN.C * * *
 
@@ -104,5 +105,6 @@ void	*one_philo(t_philo *ph);
 int		ft_atoi(char *str);
 size_t	get_current_time(void);
 void	ft_usleep(size_t time);
+int		count_philos_full(t_program *prog);
 
 #endif
